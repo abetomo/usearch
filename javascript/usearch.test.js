@@ -140,8 +140,24 @@ test('Serialization', async (t) => {
         index.save(indexPath);
     });
 
-    t.afterEach(() => {
-        fs.unlinkSync(indexPath);
+    t.afterEach(async () => {
+        // After testing view() we get the following error on Winodws.
+        // `error: "EBUSY: resource busy or locked, unlink`
+        //
+        // Wait a few seconds for the file to finish closing before removing it.
+        // Wait up to 3 seconds.
+        for (let i = 0; i < 30; i++) {
+            try {
+                fs.unlinkSync(indexPath);
+                break;
+            } catch (err) {
+                if (err.code === 'EBUSY') {
+                    await new Promise((s) => setTimeout(s, 100));
+                } else {
+                    throw err;
+                }
+            }
+        }
     });
 
     await t.test('load', () => {
@@ -158,10 +174,7 @@ test('Serialization', async (t) => {
         assertAlmostEqual(results.distances[0], new Float32Array([0]));
     });
 
-    // todo: Skip as the test fails only on windows.
-    // The following error in afterEach().
-    // `error: "EBUSY: resource busy or locked, unlink`
-    await t.test('view', {skip: process.platform === 'win32'}, () => {
+    await t.test('view', () => {
         const index = new usearch.Index({
             metric: "l2sq",
             connectivity: 16,
