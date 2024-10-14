@@ -145,10 +145,11 @@ test('Serialization', async (t) => {
         // `error: "EBUSY: resource busy or locked, unlink`
         //
         // Wait a few seconds for the file to finish closing before removing it.
-        // Wait up to 3 seconds.
-        for (let i = 0; i < 30; i++) {
+        // Wait up to 5 seconds.
+        for (let i = 0; i < 50; i++) {
             try {
                 fs.unlinkSync(indexPath);
+                console.log('REMOVED');
                 break;
             } catch (err) {
                 if (err.code === 'EBUSY') {
