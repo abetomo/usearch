@@ -176,7 +176,7 @@ test('Serialization', async (t) => {
     });
 
     await t.test('view', () => {
-        const index = new usearch.Index({
+        let index = new usearch.Index({
             metric: "l2sq",
             connectivity: 16,
             dimensions: 3,
