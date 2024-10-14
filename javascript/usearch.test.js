@@ -187,5 +187,7 @@ test('Serialization', async (t) => {
         assert.equal(index.size(), 1);
         assert.deepEqual(results.keys, new BigUint64Array([42n]));
         assertAlmostEqual(results.distances[0], new Float32Array([0]));
+
+        index = null;
     });
 });
